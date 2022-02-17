@@ -70,7 +70,7 @@ query_ids <- GET(
   query = list(
     db='pubmed',
     term='covid19 canada',
-    remax=1000
+    retmax=1000
   )
 )
 
@@ -97,10 +97,11 @@ following lines of code:
 ids <- as.character(ids)
 
 # Find all the ids 
-ids <- unlist(stringr::str_extract_all(ids, "<Id>[0-9]+</Id>"))
+ids <- unlist(stringr::str_extract_all(ids, "<Id>[1-9]+</Id>"))
 
 # Remove all the leading and trailing <Id> </Id>. Make use of "|"
-ids <- stringr::str_remove_all(ids, "<Id></Id>")
+ids <- stringr::str_remove_all(ids, "<Id>|</Id>")
+
 ```
 
 With the ids in hand, we can now try to get the abstracts of the papers. As
@@ -144,10 +145,11 @@ Using the function `stringr::str_extract_all()` applied on `publications_txt`, c
 Write a regular expression that captures all such instances
 
 ```{r univ-institute-regex, eval = FALSE}
-institution <- str_extract_all(
+
+institution <- stringr::str_extract_all(
   publications_txt,
-  "[YOUR REGULAR EXPRESSION HERE]"
-  ) 
+  "University\\s+of\\s+[[:alpha:]]+ | [[:alpha:]]+\\s+Institute\\s+of\\s+[[:alpha:]]+"
+  )
 institution <- unlist(institution)
 table(institution)
 ```
@@ -160,9 +162,9 @@ Repeat the exercise and this time focus on schools and departments in the form o
 And tabulate the results
 
 ```{r school-department, eval = FALSE}
-schools_and_deps <- str_extract_all(
-  abstracts_txt,
-  "[YOUR REGULAR EXPRESSION HERE]"
+schools_and_deps <- stringr::str_extract_all(
+  publications_txt,
+  "School\\s+of\\s+[[:alpha:]]+ | Department\\s+of\\s+[[:alpha:]]+"
   )
 table(schools_and_deps)
 ```
